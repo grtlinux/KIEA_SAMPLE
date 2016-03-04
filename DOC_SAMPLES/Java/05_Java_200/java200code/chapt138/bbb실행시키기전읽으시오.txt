@@ -1,0 +1,3 @@
+javac -d  C:\java200code\chapt138\bsecrete   C:\java200code\chapt138\bbb\*.java
+
+java -cp  .;C:\java200code\chapt138\bsecrete   com.jungbo.three.PackageUsingSecretMain

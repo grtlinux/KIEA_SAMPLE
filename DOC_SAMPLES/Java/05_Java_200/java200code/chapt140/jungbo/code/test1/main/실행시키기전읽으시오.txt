@@ -1,0 +1,3 @@
+cd  C:\java200code\chapt140\jungbo\code\test1\main
+javac -cp C:\java200code\chapt140\jungbo\code\test1\secrete2\secrete2.jar -d . SecretMain.java
+java -cp .;C:\java200code\chapt140\jungbo\code\test1\secrete2\secrete2.jar com.jungbo.three.SecretMain

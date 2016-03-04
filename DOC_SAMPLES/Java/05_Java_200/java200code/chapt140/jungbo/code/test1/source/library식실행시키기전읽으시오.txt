@@ -1,0 +1,5 @@
+cd  C:\java200code\chapt140\jungbo\code\test1\source
+javac -d C:\java200code\chapt140\jungbo\code\test1\classes   *.java
+
+cd  C:\java200code\chapt140\jungbo\code\test1\secrete2
+jar cvf secrete2.jar -C C:\java200code\chapt140\jungbo\code\test1\classes\  .

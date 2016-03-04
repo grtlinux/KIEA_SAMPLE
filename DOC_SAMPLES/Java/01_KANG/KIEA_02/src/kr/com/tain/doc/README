@@ -1,0 +1,1341 @@
+-----------------------------------------------------------------------------------------------------------------------------------
+
+[ eclipse 간단옵션 분석 ]
+
+	-vmargs
+	-Xverify:none
+	-XX:+UseParallelGC
+	-XX:PermSize=64M
+	-XX:MaxPermSize=128M
+	-XX:MaxNewSize=64M
+	-XX:NewSize=64M
+	-Xms512m
+	-Xmx512m
+
+	1. -Xverify:none
+		
+		remote - 원결 클래스 로드의 엄격한 클래스 확인 가능
+		all - 모든 클래스 로드의 엄격한 클래스 확인가능
+		none - 엄격한 클래스 확인 불가능
+		
+		설명 : 이 스위치는 JAVA 바이트 코드 확인 기능을 꺼서 클래스 로드 속도를 높이고
+		시작 중에 확인만을 위해 클래스를 로드해야 할 필요도 없애 준다.
+		시작 시간이 단축되기 때문에 이 스위치를 사용하지 ㅇㄴ흘 이유가 없습니다.
+		
+	2. -XX:+UseParallelGC
+	
+		JDK 1.4에서부터 새로 적용되는 GC방법은
+		Parallel GC와 Concurrent GC 두가지 방법이 있다.
+		Parallel GC는 Minor GC를 좀더 빨리하게 하는 방벋이고 (Throughput 위주)
+		Concurrent GC는 Full GC시에 시스템의 멈줌(Pause)현상을 최소화하는 GC방법이다.
+	
+	3. -XX:PermSize=64M
+	   -XX:MaxPermSize=128M
+	   
+	   PermSize는 Java Application 자체(Java class etc...)가 로딩되는 영역이다.
+	   추측 : Application class라는데 로딩될 때 메모리 부족현상이 있을 것 같으니 임의로 설정
+	
+	4. -XX:NewSize=64M
+	   -XX:MaxNewSize=64M
+	   
+	   NewSize 설명 : JVM은 NEW/YOUNG영역, Old영역, Perm영역 3가지가 존재
+	   NEW/YOUNG영역은 새로운 객체가 생성되자마자 저장되고 생기지 얼마 안되는 
+	   객체가 저장되는 곳이다. 시간이 지나면 Old 영역으로 이동한다.
+	   추측 : 새로운 객체가 생성되는 NEN/YOUNG 영역의 크기를 설정
+	
+	5. -Xms512m
+	   -Xmx512m
+	   
+	   전체 Heap size는 ?ms와 ?mx로 Heap 사이즈의 영역을 조정할 수 있다.
+	   예를 들어 ?ms512m ?mx 1024m로 설정하면 JVM은 전체 Heap size를 Application의
+	   상황에 따라서 512m~1024m bytes 사이에서 사용하게 된다.
+	   두 값의 사이즈를 같게 하는 것이 좋다고 한다.
+
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+
+AT 명령을 사용하여 작업을 예약하고 취소하는 방법 
+
+(1) : AT 명령을 사용하여 작업을 예약하고 취소하는 방법  
+ 
+
+이번 기사에서는 Windows 2000에서 제어판의 작업 스케줄러 도구를 사용하여 작업을 예약하는 방법을 at 명령을 통해 구현하는 방법에 대해서 알아보자. at 명령을 사용하여 예약된 작업을 작성하고 취소하는 방법에 대해서 자세히 알아보자.
+
+AT 명령 개요
+
+at 명령을 사용하여 지정된 날짜와 시간에 실행할 명령, 스크립트 또는 프로그램을 예약할 수 있다. 또한 이 명령을 사용하여 기존에 예약된 작업을 확인할 수 있다. 
+
+at 명령을 사용하려면 작업 스케줄러 서비스가 실행되어야 하며 사용자가 로컬 Administrators 그룹 구성원으로 로그온해야 한다. at 명령을 사용하여 작업을 작성할 때 작업이 같은 사용자 계정에서 실행되도록 구성해야 한다. 
+
+at 명령은 다음 구문을 사용한다. 
+
+at \\ computername time /interactive | /every: date , ... /next: date , ... command 
+at \\ computername id /delete | /delete/yes 
+다음은 at 명령을 사용할 때 사용할 수 있는 매개 변수이다. 
+
+\\computername
+이 매개 변수를 사용하여 원격 컴퓨터를 지정한다. 이 매개 변수를 생략하면 작업이 로컬 컴퓨터에서 실행되도록 예약된다. 
+time
+이 매개 변수를 사용하여 작업이 실행되는 시간을 지정한다. 시간은 24시간을 기준으로 하여 hours: minutes로 지정된다. 예를 들어, 0:00은 자정을 나타내며 20:30은 오후 8시 30분을 나타낸다. 
+/interactive
+이 매개 변수를 사용하여 작업이 실행되고 있을 때 로그온되어 있는 사용자의 데스크톱과 해당 작업을 상호 작용할 수 있게 한다. 
+/every: date ,... 
+이 매개 변수를 사용하여 매주 금요일이나 매월 8일처럼 지정된 요일이나 날짜에 작업을 실행하도록 예약한다. 하나 이상의 요일(다음 약자 사용: M,T,W,Th,F,S,Su)이나 하나 이상의 날짜(숫자 1 - 31 사용)로 date를 지정한다. 쉼표를 사용하여 여러 날짜 항목을 구분해야 한다. 이 매개 변수를 생략하면 현재 날짜에 작업이 실행되도록 예약된다. 
+/next: date , ...
+이 매개 변수를 사용하여 작업이 다음 요일(예: 다음 월요일)이나 날짜에 실행되도록 예약한다. 하나 이상의 요일(다음 약자 사용: M,T,W,Th,F,S,Su)이나 하나 이상의 날짜(숫자 1 - 31 사용)로 date를 지정한다. 쉼표를 사용하여 여러 날짜 항목을 구분해야 한다. 이 매개 변수를 생략하면 현재 날짜에 작업이 실행되도록 예약된다. 
+command
+이 매개 변수를 사용하여 실행할 Windows 2000 명령, 프로그램(.exe 또는 .com 파일) 또는 일괄 프로그램(.bat 또는 .cmd 파일)을 지정한다. 이 명령을 인수로 실행해야 하는 경우 절대 경로 이름(드라이브 문자로 시작하는 전체 경로)을 사용한다. 이 명령이 원격 컴퓨터에 있으면 범용 명명 규칙(UNC) 경로 이름(\\ ServerName \ ShareName)을 사용한다. 명령이 실행(.exe) 파일이 아니면 cmd /c copy C:\*.* C:\temp처럼 명령 앞에 cmd /c를 붙여야 한다. 
+id
+이 매개 변수를 사용하여 예약된 작업에 할당되는 식별 번호를 지정한다. 
+/delete
+이 매개 변수를 사용하여 예약된 작업을 취소한다. id 매개 변수를 생략하면 컴퓨터에서 예약된 모든 작업이 취소된다. 
+/yes
+이 매개 변수를 사용하여 예약된 작업을 취소할 때 시스템의 모든 쿼리에 예로 응답한다. 이 매개 변수를 생략하면 작업을 취소할지 묻는 메시지가 나타난다. 
+예약된 작업 작성 방법
+
+시작을 누르고 프로그램, 보조프로그램을 차례로 가리킨 다음 명령 프롬프트를 누른다. 
+명령 프롬프트에서 다음 명령줄을 입력한 다음 Enter 키를 눌러 현재 실행 중인 서비스 목록을 나타낸다. 
+net start 
+목록에 작업 스케줄러가 나타나지 않으면 다음 명령줄을 입력한 다음 Enter 키를 누른다. 
+net start "task scheduler" 
+명령 프롬프트에서 다음 명령줄을 입력한 다음(사용자 상황에 맞게 매개 변수 사용) Enter 키를 누른다. 
+at \\ computername time /interactive | /every: date , ... /next: date , ... command 
+활용 예제
+
+자정에 Documents 폴더에서 MyDocs 폴더로 모든 파일을 복사하려면 다음 명령줄을 입력한 다음 Enter 키를 누른다. 
+at 00:00 cmd /c copy C:\Documents\*.* C:\MyDocs 
+매일 밤 11시에 Products 서버를 백업하려면 백업 명령(예: Backup.bat)이 들어 있는 배치 파일을 만들고 다음 명령줄을 입력한 다음 Enter 키를 눌러 백업을 예약한다. 
+at \\products 23:00 /every:M,T,W,Thu,F backup 
+Sales 서버를 오전 6시에 실행하고 Corp 서버의 공유 Reports 폴더의 Sales.txt 파일 목록을 리디렉션하도록 net share 명령을 예약하려면 다음 명령줄을 입력한 다음 Enter 키를 누른다. 
+at \\sales 06:00 cmd /c "net share reports=d:\Documents\reports >> \\corp\reports\sales.txt" 
+예약된 작업 취소 방법
+
+시작을 누르고 프로그램, 보조프로그램을 차례로 가리킨 다음 명령 프롬프트를 누른다. 
+명령 프롬프트에서 다음 명령줄을 입력한 다음 Enter 키를 눌러 현재 실행 중인 서비스 목록을 나타낸다. 
+net start 
+목록에 작업 스케줄러가 나타나지 않으면 다음 명령줄을 입력한 다음 Enter 키를 누른다. 
+net start "task scheduler" 
+명령 프롬프트에서 다음 명령줄을 입력한 다음(사용자 상황에 맞게 매개 변수 사용) Enter 키를 누른다. 
+at \\ computername id /delete | /delete/yes 
+활용 예제
+
+로컬 컴퓨터에서 예약된 모든 작업을 취소하려면 at /delete를 입력한 다음 Enter 키를 누른다. 
+"MyServer"라는 컴퓨터에서 작업 ID 8을 취소하려면 at \\MyServer 8 /delete를 입력한 다음 Enter 키를 누른다. 
+예약된 작업 확인 방법
+
+at 명령을 사용하여 작성된 작업을 확인하려면 다음과 같이 한다. 
+
+시작을 누르고 프로그램, 보조프로그램을 차례로 가리킨 다음 명령 프롬프트를 누른다. 
+명령 프롬프트에서 다음 명령줄을 입력한 다음 Enter 키를 눌러 현재 실행 중인 서비스 목록을 나타낸다. 
+net start 
+목록에 작업 스케줄러가 나타나지 않으면 다음 명령줄을 입력한 다음 Enter 키를 누른다. 
+net start "task scheduler" 
+명령 프롬프트에서 다음 작업 중 하나를 수행한다. 
+at 명령을 사용하여 예약된 작업 목록을 보려면 다음 명령줄을 입력한 다음 Enter 키를 누른다. 
+at \\ computername 
+특별히 예약된 작업을 보려면 다음 명령줄을 입력한 다음 Enter 키를 누른다. 
+at \\ computername id 
+활용 예제
+
+로컬 컴퓨터에서 모든 예약된 작업을 보려면 at을 입력한 다음 Enter 키를 누른다. 
+"Support"라는 컴퓨터에 모든 예약된 작업을 보려면 at \\support를 입력한 다음 Enter 키를 누른다. 
+로컬 컴퓨터에서 작업 ID 18을 보려면 at 18을 입력한 다음 Enter 키를 누른다. 
+문제 해결
+
+at \\computername을 입력하여 예약된 작업 목록을 보는데 at 명령을 사용하여 작성된 일부 또는 모든 예약된 작업이 표시되지 않는다. 
+at 명령을 사용하여 작업을 작성한 후 예약된 작업 폴더의 작업을 수정하는 경우에 이러한 문제가 발생할 수 있다. at 명령을 사용하여 작업을 예약하면 제어판의 예약된 작업 폴더에 해당 작업이 표시된다. 작업을 보고 수정할 수 있다. 그러나 작업을 수정할 때 at 명령을 사용하면 작업을 볼 수 없다. 
+이 문제를 해결하려면 제어판의 예약된 작업 폴더에서 작업을 보거나 수정한다. 
+at 명령을 사용하여 작업을 예약했는데 지정된 시간이나 날짜에 해당 작업이 실행되지 않는다. 
+아래의 두 경우 중 하나에 해당하면 이러한 문제가 발생할 수 있다. 
+명령 구문이 잘못되었다. 
+작업을 예약한 후 at \\computername을 입력하여 구문이 올바른지 확인한다. 명령줄에 표시된 정보가 올바르지 않으면 작업을 취소한 다음 다시 작성한다. 
+또는 
+.exe 파일이 아닌 명령을 실행하도록 작업을 예약했다. 
+명령을 실행하기 전에는 at 명령이 cmd(명령 인터프리터)를 자동으로 로드하지 않는다. .exe 파일을 실행하지 않은 경우 at cmd /c dir > c:\test.txt처럼 명령 시작 부분에 Cmd.exe를 로드해야 한다. 
+Windows 2000에서 AT 명령을 사용하는 방법에 대한 더욱더 자세한 내용은 Windows 2000 도움말을 참조한다.
+
+ 
+
+
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+
+C:\Users\KangSeok>schtasks /?
+
+SCHTASKS /parameter [인수]
+
+설명:
+    관리자가 로컬 컴퓨터나 원격 컴퓨터에서 예약된 작업을 만들기,
+    삭제, 쿼리, 변경, 실행 또는 끝낼 수 있도록 합니다.
+
+매개 변수 목록:
+    /Create         예약된 작업을 새로 만듭니다.
+
+    /Delete         예약된 작업을 삭제합니다.
+
+    /Query          모든 예약된 작업을 표시합니다.
+
+    /Change         예약된 작업의 속성을 변경합니다.
+
+    /Run            예약된 작업을 요청 시 실행합니다.
+
+    /End            현재 실행하고 있는 예약된 작업을 중지합니다.
+
+    /ShowSid        예약된 작업 이름에 해당하는 보안 식별자를 표시합니다.
+
+    /?              이 도움말 메시지를 표시합니다.
+
+Examples:
+    SCHTASKS
+    SCHTASKS /?
+    SCHTASKS /Run /?
+    SCHTASKS /End /?
+    SCHTASKS /Create /?
+    SCHTASKS /Delete /?
+    SCHTASKS /Query  /?
+    SCHTASKS /Change /?
+    SCHTASKS /ShowSid /?
+
+C:\Users\KangSeok>schtasks /create /?
+
+SCHTASKS /Create [/S system [/U username [/P [password]]]]
+    [/RU username [/RP password]] /SC schedule [/MO modifier] [/D day]
+    [/M months] [/I idletime] /TN taskname /TR taskrun [/ST starttime]
+    [/RI interval] [ {/ET endtime | /DU duration} [/K] [/XML xmlfile] [/V1]]
+    [/SD startdate] [/ED enddate] [/IT | /NP] [/Z] [/F] [/HRESULT] [/?]
+
+설명:
+    로컬 또는 원격 시스템에서 관리자가 예약된 작업을
+    만들 수 있도록 합니다.
+
+매개 변수 목록:
+    /S   system        연결할 원격 시스템을 지정합니다. 생략되면
+                       기본값으로 로컬 시스템이 시스템 매개 변수로 지정됩니다.
+
+    /U   username      SchTasks.exe을(를) 실행해야 하는 사용자 컨텍스트를
+                       지정합니다.
+
+    /P   [password]    제공된 사용자 컨텍스트에 대한 암호를 지정합니다.
+                       생략된 경우 입력하도록 묻습니다.
+
+    /RU  username      작업을 실행할 "다음 계정으로 실행"의 사용자 계정(사용자 컨텍스트)을
+                       지정합니다. 시스템 계정에
+                       유효한 값은"", "NT AUTHORITY\SYSTEM"
+                       또는 "SYSTEM"입니다.
+                       v2 작업의 경우, 3가지 유형에 모두 대해 잘 알려진 SID뿐만 아니라 "NT AUTHORITY\LOCALSERVICE" 및
+                       "NT AUTHORITY\NETWORKSERVICE"도
+                       사용할 수 있습니다.
+
+    /RP  [password]    "다음 계정으로 실행"의 사용자 암호를 지정합니다.
+                       암호를 묻도록 하려면 값이  "*"이거나
+                       비어 있어야 합니다. 시스템 계정에는 이 암호가 해당되지
+                       않습니다. /RU 또는 /XML 스위치와 함께 사용해야
+                       합니다.
+
+    /SC   schedule     일정 빈도를 지정합니다.
+                       유효한 일정 유형: MINUTE, HOURLY,DAILY, WEEKLY,
+                       MONTHLY, ONCE, ONSTART, ONLOGON, ONIDLE, ONEVENT.
+
+    /MO   modifier     일정 반복을 미세하게 제어할 수 있도록 일정 유형을
+                       구체화합니다. 유효한 값은 아래
+                       "한정자" 구역에 나열되어 있습니다.
+
+    /D    days         작업을 실행할 요일을 지정합니다. 유효한
+                       값: MON, TUE, WED, THU, FRI, SAT, SUN 및
+                       MONTHLY 일정에는 1 - 31(달의 날짜)
+                       와일드카드 "*"는 모든 날을 지정합니다.
+
+    /M    months       달을 지정합니다. 달의 첫 번째 날이
+                       기본값입니다. 유효한 값: JAN, FEB, MAR, APR,
+                       MAY, JUN, JUL, AUG, SEP, OCT, NOV, DEC. 와일드카드 "*"는
+                       모든 날을 지정합니다.
+
+    /I    idletime     예약된 ONIDLE 작업을 실행하기 전에
+                       기다리는 유휴 상태 시간을 지정합니다.
+                       유효한 범위: 1 - 999분
+
+    /TN   taskname     이 예약된 작업을 식별해 주는
+                       고유한 이름입니다.
+
+    /TR   taskrun      예약된 시간에 실행할 프로그램의 경로 및 파일 이름을
+                       지정합니다.
+                       예: C:\windows\system32\calc.exe
+
+    /ST   starttime    작업을 실행할 시작 시간을 지정합니다. 시간
+                       형식은 HH:mm입니다(24시간 형식). 예를 들어, 14:30은
+                       오후 2:30입니다. /ST를 지정하지 않은 경우 기본값은 현재
+                       시간입니다. 이 옵션은 /SC ONCE와 함께 요구됩니다.
+
+    /RI   interval     반복 간격(분)을 지정합니다. 다음
+                       일정 유형에는 해당되지 않습니다: MINUTE, HOURLY,
+                       ONSTART, ONLOGON, ONIDLE, ONEVENT.
+                       유효한 범위는 1-599940분입니다.
+                       /ET 또는 /DU를 지정하면 기본값으로 10분이
+                       설정됩니다.
+
+    /ET   endtime      작업 실행 종료 시간을 지정합니다. 시간 형식은
+                       HH:mm입니다(24시간 형식). 예를 들어, 14:50은 오후 2:50입니다.
+                       다음 일정 유형에는 해당되지 않습니다: ONSTART,
+                       ONLOGON, ONIDLE, ONEVENT.
+
+    /DU   duration     작업을 실행할 기간을 지정합니다. 시간
+                       형식은 HH:mm입니다. /ET 및 다음 일정 유형에는
+                       해당되지 않습니다: ONSTART, ONLOGON, ONIDLE, ONEVENT.
+                       /V1 작업의 경우 /RI를 지정하면 기본값으로 1시간이
+                       설정됩니다.
+
+    /K                 endtime 또는 duration 시간에 작업을 끝냅니다.
+                       다음 일정 유형에는 해당되지 않습니다: ONSTART,
+                       ONLOGON, ONIDLE, ONEVENT. /ET 또는 /DU가 지정되어야
+                       합니다.
+
+    /SD   startdate    작업을 실행할 첫 번째 날짜를 지정합니다. 형식은
+                       yyyy/mm/dd입니다. 기본값은 현재
+                       날짜입니다. 다음 일정 유형에는 해당되지 않습니다: ONCE,
+                       ONSTART, ONLOGON, ONIDLE, ONEVENT.
+
+    /ED   enddate      작업을 실행할 마지막 날짜를 지정합니다. 형식은
+                       yyyy/mm/dd입니다. 다음 일정 유형에는 해당되지
+                       않습니다: ONCE, ONSTART, ONLOGON, ONIDLE, ONEVENT.
+
+    /EC   ChannelName  OnEvent 트리거에 대한 이벤트 채널을 지정합니다.
+
+    /IT                            작업 실행 시 /RU 사용자가 로그온되어 있는 경우에만
+                       작업을 대화형으로 실행할 수 있도록 합니다.
+                       사용자가 로그인해야 이 작업이 실행됩니다.
+
+    /NP                암호를 저장하지 않습니다. 이 작업은 주어진 사용자로서
+                       상호 작용 없이 실행됩니다. 로컬 리소스만 사용할 수 있습니다.
+
+    /Z                 마지막 실행 후 삭제할 작업을 표시합니다.
+
+    /XML  xmlfile      파일에 지정된 작업 XML에서 작업을 만듭니다.
+                       작업 XML에 이미 사용자가 있는 경우
+                       /RU 및 /RP 스위치를 함께 사용하거나 /RP만 함께 사용할 수 있습니다.
+
+    /V1                Vista 이전 플랫폼에 표시되는 작업을 만듭니다.
+                       /XML과 호환되지 않습니다.
+
+    /F                 지정한 작업이 이미 있는 경우 작업을 강제로 만들고
+                       경고를 표시하지 않습니다.
+
+    /RL   level        작업을 위해 실행 수준을 설정합니다.  유효한 값은
+                       LIMITED 및 HIGHEST입니다. 기본값은 LIMITED입니다.
+
+    /DELAY delaytime   트리거가 발생한 후 작업 실행을 지연할
+                       대기 시간을 지정합니다. 시간 형식은
+                       mmmm:ss입니다. 이 옵션은 ONSTART, ONLOGON, ONEVENT
+                       일정 유형에만 유효합니다.
+
+    /HRESULT           진단성 향상을 위해 프로세스 종료 코드는
+                       HRESULT 형식이 됩니다.
+
+    /?                 이 도움말 메시지를 표시합니다.
+
+한정자: 일정 유형에 따라 /MO 스위치에 대해 유효한 값:
+    MINUTE:  1 - 1439분.
+    HOURLY:  1 - 23시간.
+    DAILY:   1 - 365일.
+    WEEKLY:  1 - 52주.
+    ONCE:    한정자 없음.
+    ONSTART: 한정자 없음.
+    ONLOGON: 한정자 없음.
+    ONIDLE:  한정자 없음.
+    MONTHLY: 1 - 12, 또는
+             FIRST, SECOND, THIRD, FOURTH, LAST, LASTDAY.
+
+    ONEVENT:  XPath 이벤트 쿼리 스트링.
+예:
+    ==> "ABC" 원격 컴퓨터에 "doc" 예약된 작업을 만듭니다.
+        한 시간마다 notepad.exe를 "runasuser" 사용자로 실행합니다.
+
+        SCHTASKS /Create /S ABC /U user /P password /RU runasuser
+                 /RP runaspassword /SC HOURLY /TN doc /TR notepad
+
+    ==> "ABC" 원격 컴퓨터에 "accountant" 예약된 작업을 만듭니다.
+        시작 날짜와 끝 날짜 사이에 지정한 시작 시간부터 종료 시간까지
+        5분마다 calc.exe를 실행합니다.
+
+        SCHTASKS /Create /S ABC /U domain\user /P password /SC MINUTE
+                 /MO 5 /TN accountant /TR calc.exe /ST 12:00 /ET 14:00
+                 /SD 06/06/2006 /ED 06/06/2006 /RU runasuser /RP userpassword
+
+    ==> "gametime" 예약된 작업을 만듭니다. 매월 첫 번째 일요일에
+        프리셀을 실행합니다.
+
+        SCHTASKS /Create /SC MONTHLY /MO first /D SUN /TN gametime
+                 /TR c:\windows\system32\freecell
+
+    ==> "ABC" 원격 컴퓨터에 "report" 예약된 작업을 만듭니다.
+        매주마다 notepad.exe를 실행합니다.
+
+        SCHTASKS /Create /S ABC /U user /P password /RU runasuser
+                 /RP runaspassword /SC WEEKLY /TN report /TR notepad.exe
+
+    ==> "ABC" 원격 컴퓨터에 "logtracker" 예약된 작업을 만듭니다.
+        지정된 시작 시간부터 종료 시간 없이 5분마다
+        notepad.exe.를 실행합니다. /RP 암호를
+        묻습니다.
+
+        SCHTASKS /Create /S ABC /U domain\user /P password /SC MINUTE
+                 /MO 5 /TN logtracker
+                 /TR c:\windows\system32\notepad.exe /ST 18:30
+                 /RU runasuser /RP
+
+    ==> "gaming" 예약된 작업을 만듭니다. 매일 12:00부터 14:00까지
+        freecell.exe를 실행하고 종료합니다.
+
+        SCHTASKS /Create /SC DAILY /TN gaming /TR c:\freecell /ST 12:00
+                 /ET 14:00 /K
+    ==> 이벤트 101이 시스템 채널에 게시될 때마다
+        wevtvwr.msc를 실행하는 "EventLog" 예약된 작업을 만듭니다.
+
+        SCHTASKS /Create /TN EventLog /TR wevtvwr.msc /SC ONEVENT
+                 /EC System /MO *[System/EventID=101]
+    ==> 따옴표 두 세트를 사용하여 파일 경로에 공백을 사용할 수 있습니다.
+        CMD.EXE와 SchTasks.exe에 각각 하나씩 따옴표 세트를 사용합니다.
+        CMD에 대한 외부 따옴표로는 큰따옴표를 사용하고, 내부 따옴표로는
+        작은 따옴표 또는 이스케이프된 큰따옴표를 사용해야 합니다.
+        SCHTASKS /Create
+           /tr "'c:\program files\internet explorer\iexplorer.exe'
+           \"c:\log data\today.xml\"" ...
+
+C:\Users\KangSeok>schtasks /delete /?
+
+SCHTASKS /Delete [/S system [/U username [/P [password]]]]
+         /TN taskname [/F] [/HRESULT] [/?]
+
+설명:
+    하나 이상의 예약된 작업을 삭제합니다.
+
+매개 변수 목록:
+    /S   system         연결할 원격 시스템을 지정합니다.
+
+    /U   username       schtasks.exe을(를) 실행할 사용자 컨텍스트를
+                        지정합니다.
+
+    /P   [password]     제공된 사용자 컨텍스트에 대한
+                        암호를 지정합니다. 생략된 경우 입력하도록 묻습니다.
+
+    /TN  taskname       삭제할 예약된 작업의 이름을 지정합니다.
+                        "*" 와일드카드를 사용하여 모든 작업을 삭제할 수 있습니다.
+
+    /F                  작업을 강제로 삭제하며 지정한 작업이 현재
+                        실행하고 있는 경우 경고를 표시하지 않습니다.
+
+    /HRESULT            진단성 향상을 위해 프로세스 종료 코드는
+                        HRESULT 형식이 됩니다.
+
+    /?                  이 도움말 메시지를 표시합니다.
+
+예:
+    SCHTASKS /Delete /TN * /F
+    SCHTASKS /Delete /TN "\Backup\Backup and Restore"
+    SCHTASKS /Delete /S system /U user /P password /TN "\Backup\Start Restore"
+    SCHTASKS /Delete /S system /U user /P password /TN "\Backup\Start Backup" /F
+
+C:\Users\KangSeok>schtasks /query
+
+폴더: \
+작업 이름                                다음 실행 시간         상태
+======================================== ====================== ===============
+HPCeeScheduleForKangSeok                 2015-01-23 오전 6:23:0 준비
+Optimize Start Menu Cache Files-S-1-5-21 N/A                    사용 안 함
+Synaptics TouchPad Enhancements          N/A                    실행 중
+Uninstaller_SkipUac_KangSeok             N/A                    준비
+User_Feed_Synchronization-{370FB2A7-3904 2015-01-23 오후 1:09:4 준비
+
+폴더: \Hewlett-Packard
+작업 이름                                다음 실행 시간         상태
+======================================== ====================== ===============
+정보:사용자의 액세스 수준에서 현재 사용할 수 있는 작업이 없습니다.
+
+폴더: \Hewlett-Packard\HP CoolSense
+작업 이름                                다음 실행 시간         상태
+======================================== ====================== ===============
+HP CoolSense Start at Logon              N/A                    실행 중
+
+폴더: \Microsoft
+작업 이름                                다음 실행 시간         상태
+======================================== ====================== ===============
+정보:사용자의 액세스 수준에서 현재 사용할 수 있는 작업이 없습니다.
+
+폴더: \Microsoft\Windows
+작업 이름                                다음 실행 시간         상태
+======================================== ====================== ===============
+정보:사용자의 액세스 수준에서 현재 사용할 수 있는 작업이 없습니다.
+
+폴더: \Microsoft\Windows\.NET Framework
+작업 이름                                다음 실행 시간         상태
+======================================== ====================== ===============
+.NET Framework NGEN v4.0.30319           N/A                    준비
+.NET Framework NGEN v4.0.30319 64        N/A                    준비
+.NET Framework NGEN v4.0.30319 64 Critic N/A                    사용 안 함
+.NET Framework NGEN v4.0.30319 Critical  N/A                    사용 안 함
+
+폴더: \Microsoft\Windows\Active Directory Rights Management Services Client
+작업 이름                                다음 실행 시간         상태
+======================================== ====================== ===============
+AD RMS Rights Policy Template Management N/A                    사용 안 함
+AD RMS Rights Policy Template Management N/A                    준비
+
+폴더: \Microsoft\Windows\AppID
+작업 이름                                다음 실행 시간         상태
+======================================== ====================== ===============
+SmartScreenSpecific                      N/A                    준비
+
+폴더: \Microsoft\Windows\Application Experience
+작업 이름                                다음 실행 시간         상태
+======================================== ====================== ===============
+Microsoft Compatibility Appraiser        2015-01-24 오전 1:38:2 준비
+ProgramDataUpdater                       N/A                    준비
+StartupAppTask                           N/A                    준비
+
+폴더: \Microsoft\Windows\Autochk
+작업 이름                                다음 실행 시간         상태
+======================================== ====================== ===============
+Proxy                                    N/A                    준비
+
+폴더: \Microsoft\Windows\CertificateServicesClient
+작업 이름                                다음 실행 시간         상태
+======================================== ====================== ===============
+UserTask                                 N/A                    준비
+UserTask-Roam                            N/A                    사용 안 함
+
+폴더: \Microsoft\Windows\Chkdsk
+작업 이름                                다음 실행 시간         상태
+======================================== ====================== ===============
+ProactiveScan                            N/A                    준비
+
+폴더: \Microsoft\Windows\Customer Experience Improvement Program
+작업 이름                                다음 실행 시간         상태
+======================================== ====================== ===============
+BthSQM                                   N/A                    준비
+Consolidator                             2015-01-23 오후 9:00:0 준비
+KernelCeipTask                           N/A                    준비
+Uploader                                 N/A                    준비
+UsbCeip                                  N/A                    준비
+
+폴더: \Microsoft\Windows\Data Integrity Scan
+작업 이름                                다음 실행 시간         상태
+======================================== ====================== ===============
+Data Integrity Scan                      N/A                    사용 안 함
+Data Integrity Scan for Crash Recovery   N/A                    준비
+
+폴더: \Microsoft\Windows\Defrag
+작업 이름                                다음 실행 시간         상태
+======================================== ====================== ===============
+ScheduledDefrag                          N/A                    준비
+
+폴더: \Microsoft\Windows\Device Setup
+작업 이름                                다음 실행 시간         상태
+======================================== ====================== ===============
+Metadata Refresh                         N/A                    준비
+
+폴더: \Microsoft\Windows\Diagnosis
+작업 이름                                다음 실행 시간         상태
+======================================== ====================== ===============
+Scheduled                                N/A                    준비
+
+폴더: \Microsoft\Windows\DiskCleanup
+작업 이름                                다음 실행 시간         상태
+======================================== ====================== ===============
+SilentCleanup                            N/A                    준비
+
+폴더: \Microsoft\Windows\DiskDiagnostic
+작업 이름                                다음 실행 시간         상태
+======================================== ====================== ===============
+Microsoft-Windows-DiskDiagnosticResolver N/A                    사용 안 함
+
+폴더: \Microsoft\Windows\DiskFootprint
+작업 이름                                다음 실행 시간         상태
+======================================== ====================== ===============
+Diagnostics                              N/A                    준비
+
+폴더: \Microsoft\Windows\FileHistory
+작업 이름                                다음 실행 시간         상태
+======================================== ====================== ===============
+File History (maintenance mode)          N/A                    준비
+
+폴더: \Microsoft\Windows\IME
+작업 이름                                다음 실행 시간         상태
+======================================== ====================== ===============
+SQM data sender                          N/A                    사용 안 함
+
+폴더: \Microsoft\Windows\Live
+작업 이름                                다음 실행 시간         상태
+======================================== ====================== ===============
+정보:사용자의 액세스 수준에서 현재 사용할 수 있는 작업이 없습니다.
+
+폴더: \Microsoft\Windows\Location
+작업 이름                                다음 실행 시간         상태
+======================================== ====================== ===============
+Notifications                            N/A                    준비
+
+폴더: \Microsoft\Windows\MemoryDiagnostic
+작업 이름                                다음 실행 시간         상태
+======================================== ====================== ===============
+ProcessMemoryDiagnosticEvents            N/A                    준비
+RunFullMemoryDiagnostic                  N/A                    준비
+
+폴더: \Microsoft\Windows\Mobile Broadband Accounts
+작업 이름                                다음 실행 시간         상태
+======================================== ====================== ===============
+MNO Metadata Parser                      N/A                    준비
+
+폴더: \Microsoft\Windows\MobilePC
+작업 이름                                다음 실행 시간         상태
+======================================== ====================== ===============
+HotStart                                 N/A                    준비
+
+폴더: \Microsoft\Windows\MUI
+작업 이름                                다음 실행 시간         상태
+======================================== ====================== ===============
+LPRemove                                 N/A                    준비
+
+폴더: \Microsoft\Windows\Multimedia
+작업 이름                                다음 실행 시간         상태
+======================================== ====================== ===============
+SystemSoundsService                      N/A                    실행 중
+
+폴더: \Microsoft\Windows\NetCfg
+작업 이름                                다음 실행 시간         상태
+======================================== ====================== ===============
+BindingWorkItemQueueHandler              N/A                    준비
+
+폴더: \Microsoft\Windows\NetTrace
+작업 이름                                다음 실행 시간         상태
+======================================== ====================== ===============
+GatherNetworkInfo                        N/A                    준비
+
+폴더: \Microsoft\Windows\PerfTrack
+작업 이름                                다음 실행 시간         상태
+======================================== ====================== ===============
+BackgroundConfigSurveyor                 2015-01-24 오전 3:00:0 준비
+
+폴더: \Microsoft\Windows\PLA
+작업 이름                                다음 실행 시간         상태
+======================================== ====================== ===============
+정보:사용자의 액세스 수준에서 현재 사용할 수 있는 작업이 없습니다.
+
+폴더: \Microsoft\Windows\Plug and Play
+작업 이름                                다음 실행 시간         상태
+======================================== ====================== ===============
+Device Install Reboot Required           N/A                    준비
+
+폴더: \Microsoft\Windows\Power Efficiency Diagnostics
+작업 이름                                다음 실행 시간         상태
+======================================== ====================== ===============
+AnalyzeSystem                            N/A                    준비
+
+폴더: \Microsoft\Windows\RAC
+작업 이름                                다음 실행 시간         상태
+======================================== ====================== ===============
+RacTask                                  2015-01-23 오전 9:13:0 실행 중
+
+폴더: \Microsoft\Windows\RecoveryEnvironment
+작업 이름                                다음 실행 시간         상태
+======================================== ====================== ===============
+VerifyWinRE                              N/A                    사용 안 함
+
+폴더: \Microsoft\Windows\Registry
+작업 이름                                다음 실행 시간         상태
+======================================== ====================== ===============
+RegIdleBackup                            N/A                    준비
+
+폴더: \Microsoft\Windows\RemovalTools
+작업 이름                                다음 실행 시간         상태
+======================================== ====================== ===============
+MRT_HB                                   N/A                    준비
+
+폴더: \Microsoft\Windows\Servicing
+작업 이름                                다음 실행 시간         상태
+======================================== ====================== ===============
+StartComponentCleanup                    N/A                    준비
+
+폴더: \Microsoft\Windows\SettingSync
+작업 이름                                다음 실행 시간         상태
+======================================== ====================== ===============
+BackgroundUploadTask                     N/A                    준비
+BackupTask                               N/A                    준비
+NetworkStateChangeTask                   N/A                    준비
+
+폴더: \Microsoft\Windows\Shell
+작업 이름                                다음 실행 시간         상태
+======================================== ====================== ===============
+CreateObjectTask                         N/A                    준비
+FamilySafetyMonitor                      N/A                    준비
+FamilySafetyRefresh                      N/A                    준비
+FamilySafetyUpload                       N/A                    사용 안 함
+
+폴더: \Microsoft\Windows\SideShow
+작업 이름                                다음 실행 시간         상태
+======================================== ====================== ===============
+AutoWake                                 N/A                    사용 안 함
+GadgetManager                            N/A                    준비
+SessionAgent                             N/A                    사용 안 함
+
+폴더: \Microsoft\Windows\SkyDrive
+작업 이름                                다음 실행 시간         상태
+======================================== ====================== ===============
+Idle Sync Maintenance Task               N/A                    준비
+Routine Maintenance Task                 N/A                    준비
+
+폴더: \Microsoft\Windows\SoftwareProtectionPlatform
+작업 이름                                다음 실행 시간         상태
+======================================== ====================== ===============
+SvcRestartTaskLogon                      N/A                    사용 안 함
+
+폴더: \Microsoft\Windows\Sysmain
+작업 이름                                다음 실행 시간         상태
+======================================== ====================== ===============
+WsSwapAssessmentTask                     N/A                    준비
+
+폴더: \Microsoft\Windows\Task Manager
+작업 이름                                다음 실행 시간         상태
+======================================== ====================== ===============
+Interactive                              N/A                    준비
+
+폴더: \Microsoft\Windows\TaskScheduler
+작업 이름                                다음 실행 시간         상태
+======================================== ====================== ===============
+Idle Maintenance                         N/A                    준비
+Manual Maintenance                       N/A                    준비
+Regular Maintenance                      2015-01-24 오전 5:06:3 준비
+
+폴더: \Microsoft\Windows\TextServicesFramework
+작업 이름                                다음 실행 시간         상태
+======================================== ====================== ===============
+MsCtfMonitor                             N/A                    실행 중
+
+폴더: \Microsoft\Windows\Time Synchronization
+작업 이름                                다음 실행 시간         상태
+======================================== ====================== ===============
+ForceSynchronizeTime                     N/A                    준비
+SynchronizeTime                          N/A                    준비
+
+폴더: \Microsoft\Windows\Time Zone
+작업 이름                                다음 실행 시간         상태
+======================================== ====================== ===============
+SynchronizeTimeZone                      N/A                    준비
+
+폴더: \Microsoft\Windows\WDI
+작업 이름                                다음 실행 시간         상태
+======================================== ====================== ===============
+ResolutionHost                           N/A                    준비
+
+폴더: \Microsoft\Windows\Windows Defender
+작업 이름                                다음 실행 시간         상태
+======================================== ====================== ===============
+Windows Defender Cache Maintenance       N/A                    준비
+Windows Defender Cleanup                 N/A                    준비
+Windows Defender Scheduled Scan          N/A                    준비
+Windows Defender Verification            N/A                    준비
+
+폴더: \Microsoft\Windows\Windows Error Reporting
+작업 이름                                다음 실행 시간         상태
+======================================== ====================== ===============
+QueueReporting                           N/A                    준비
+
+폴더: \Microsoft\Windows\Windows Filtering Platform
+작업 이름                                다음 실행 시간         상태
+======================================== ====================== ===============
+BfeOnServiceStartTypeChange              N/A                    준비
+
+폴더: \Microsoft\Windows\Windows Media Sharing
+작업 이름                                다음 실행 시간         상태
+======================================== ====================== ===============
+UpdateLibrary                            N/A                    준비
+
+폴더: \Microsoft\Windows\WindowsBackup
+작업 이름                                다음 실행 시간         상태
+======================================== ====================== ===============
+ConfigNotification                       2015-01-23 오전 10:00: 준비
+
+폴더: \Microsoft\Windows\WindowsColorSystem
+작업 이름                                다음 실행 시간         상태
+======================================== ====================== ===============
+Calibration Loader                       N/A                    사용 안 함
+
+폴더: \Microsoft\Windows\WindowsUpdate
+작업 이름                                다음 실행 시간         상태
+======================================== ====================== ===============
+AUFirmwareInstall                        N/A                    사용 안 함
+AUScheduledInstall                       N/A                    사용 안 함
+AUSessionConnect                         N/A                    준비
+Scheduled Start                          2015-01-23 오전 8:01:5 준비
+Scheduled Start With Network             N/A                    준비
+
+폴더: \Microsoft\Windows\Wininet
+작업 이름                                다음 실행 시간         상태
+======================================== ====================== ===============
+CacheTask                                N/A                    실행 중
+
+폴더: \Microsoft\Windows\Work Folders
+작업 이름                                다음 실행 시간         상태
+======================================== ====================== ===============
+Work Folders Logon Synchronization       N/A                    준비
+Work Folders Maintenance Work            N/A                    준비
+
+폴더: \Microsoft\Windows\Workplace Join
+작업 이름                                다음 실행 시간         상태
+======================================== ====================== ===============
+Automatic-Workplace-Join                 N/A                    사용 안 함
+
+폴더: \Microsoft\Windows\WS
+작업 이름                                다음 실행 시간         상태
+======================================== ====================== ===============
+Badge Update                             N/A                    준비
+Sync Licenses                            N/A                    준비
+WSRefreshBannedAppsListTask              2015-01-23 오후 11:31: 준비
+WSTask                                   N/A                    준비
+
+폴더: \Microsoft\Windows Live
+작업 이름                                다음 실행 시간         상태
+======================================== ====================== ===============
+정보:사용자의 액세스 수준에서 현재 사용할 수 있는 작업이 없습니다.
+
+폴더: \Microsoft\Windows Live\SOXE
+작업 이름                                다음 실행 시간         상태
+======================================== ====================== ===============
+Extractor Definitions Update Task        2015-01-27 오전 10:35: 준비
+
+폴더: \WPD
+작업 이름                                다음 실행 시간         상태
+======================================== ====================== ===============
+SqmUpload_S-1-5-21-2143948969-889361152- 2015-01-23 오후 12:07: 준비
+
+C:\Users\KangSeok>
+
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+
+ 1. Tail
+ 1. EventLogTail
+ 1. MemWatch
+ 1. ProcessState
+ 1. Runner
+ 1. ServiceStatus
+ 
+ 1. SigarCommandBase
+ 1. Shell
+ 1. Uptime
+ 1. Ps
+ 1. Top
+
+ 1. Watch
+
+
+
+
+
+
+
+
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+
+SPRING 사이트 : http://docs.spring.io/downloads/nightly/release-download.php?project=SPR
+
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+
+[ log4j 설정하기 ]
+
+	log4j는 java를 기반으로 한 Logging 유틸리티이다. 현재 7개의 로그 레벨을 가지고 있으며 설정 파일에 따라 레벨 지정 및 로깅 대상
+	지정이 가능하다. 레벨순위는 다음과 같다.
+	
+		FATAL > ERROR > WARN > INFO > DEBUG > TRACE
+	
+	1. 라이브러리 설정 방법
+	
+		- MAVEN을 통한 설정 방법(Type을 jar로 해야함
+		- 해당 라이브러리를 다운로드 받아 classpath에 등록등이 있다.
+		
+			http://logging.apache.org/log4j/1.2/download.html
+		
+	2. xml을 이용한 log4j 환경설정
+	
+		- log4j.xml : src 디록토리에 설정해 놓으면 됩니다.
+		
+			<?xml version="1.0" encoding="ISO-8859-1"?>
+			<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
+			<log4j:configuration
+				xmlns:log4j="http://jakarta.apache.org/log4j/" debug="false">
+			
+				<appender name="console" class="org.apache.log4j.ConsoleAppender">
+					<layout class="org.apache.log4j.PatternLayout">
+						<param name="ConversionPattern" value="%d %5p [%c] %m%n" />
+					</layout>
+				</appender>
+				
+				<logger name="co.kr.d2n" additivity="false">
+					<level value="DEBUG" />
+					<appender-ref ref="console" />
+				</logger>
+			
+			</log4j:configuration>
+			
+			ConversionPattern에 출력될 로그의 패텅을 지정해 놓는다.
+			특정 패키지에 대한 로그를 남기고자 할 경우 해당 패키지명을 작성하고 지정할 로그레벨을 지정한다.
+	
+	3. 소스단에서의 사용
+	
+		- Log4jTest.java
+		
+			import org.apache.log4j.Logger;
+			
+			public class Log4jTest {
+			
+				static Logger logger = Logger.getLogger(Log4jTest.class);
+				
+				public static void main(String[] args) {
+					String message = "Log Test";
+					logger.fatal(message);
+					logger.error(message);
+					logger.warn(message);
+					logger.info(message);
+					logger.debug(message);
+					logger.trace(message);
+				}
+			}
+			
+
+-----------------------------------------------------------------------------------------------------------------------------------
+
+[ tomcat log4j 파일 설정 ]
+
+	log4j.properties 에서 찐한 부분을 보면 로그 파일을 어디다가 저장 할 지 설정할 수 있다. 
+	myLog.log 는 파일명. txt 파일로 출력된다. 
+
+		log4j.rootLogger=INFO, stdout
+		
+		log4j.logger.net.sf.ehcache.CacheManager=ERROR
+		log4j.logger.com.entwell=DEBUG, R
+		log4j.logger.com.ibatis=DEBUG, R
+		log4j.logger.java.sql.Connection=DEBUG
+		log4j.logger.java.sql.Statement=DEBUG
+		log4j.logger.java.sql.PreparedStatement=DEBUG, R
+		log4j.logger.java.sql.ResultSet=INFO, R
+		log4j.logger.com.entwell.core.common.dao.TestSqlMapClientBuilder=ERROR
+		
+		log4j.appender.stdout=org.apache.log4j.ConsoleAppender
+		log4j.appender.stdout.layout=org.apache.log4j.PatternLayout
+		
+		# Pattern to output the caller's file name and line number.
+		log4j.appender.stdout.layout.ConversionPattern=%5p [%t] (%F:%L) - %m%n
+		
+		log4j.appender.R=org.apache.log4j.RollingFileAppender
+		log4j.appender.R.File=D:/tomcatLog/myLog.log
+		
+		log4j.appender.R.MaxFileSize=1000KB
+		# Keep one backup file
+		log4j.appender.R.MaxBackupIndex=20
+		
+		log4j.appender.R.layout=org.apache.log4j.PatternLayout
+		
+		log4j.appender.R.layout.ConversionPattern=%p %t %c - %m%n
+
+
+
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------

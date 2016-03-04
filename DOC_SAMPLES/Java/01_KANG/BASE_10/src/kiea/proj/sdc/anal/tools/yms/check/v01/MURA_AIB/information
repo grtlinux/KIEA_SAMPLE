@@ -1,0 +1,23 @@
+[ 얼룩자동분석 ]
+
+    1. MURA_AIB  (AIB 통합)
+    
+        m01.MURA_AIB_WIP                  : s01.AIB_MURA_WIP_SUMMARY_EXTRC     : 얼룩이상발의 얼룩code에 대한 WIP data 추출
+    
+        m02.MURA_AIB_WIP_EQP_MURA_TREND   : s01.EQP_PROCTIME_MURA_TREND        : WIP_EQP_SUMMRY 시간별 평균얼룩지수 trend 산출용
+    
+        m03.MURA_AIB_TOTCELL_FLOW         : s01.MURA_EQP_TOT_CELL_FLOW         : YMS_DM.F_INSPIMPTDEFECTEQP 사용 공정시간별 진행수. step descript 정보 매핑
+    
+        m04.MURA_CELLGRIDMAP              : s01.GLASSCELL_GRIDMAP              : 얼룩좌표 drawing(염동훈선임 guide)
+    
+        m05.MURA_MAIN_SUMM_INFO           : s01.AIB_MURA_TREND_EXTR            : 얼룩 trend를 그리기 위해 모수를 가져 옴(1일차)
+        
+                                            s02.MURA_TREND                     : SPC 얼룩이상발의 TREND 맞춤. (LC/MOD) - TREND
+        
+                                            s03.BUBBLE_MAP                     : 얼룩지수 BUBBLE MAP 생성용
+    
+                                            s04.MURA_DESCRIPTION               : 얼룩지수 DESCRIPTION 매핑 ! 'PR_LYA_SUMM 확인
+    
+        m06.MURA_SUM_GLASS                : s01.GLASS_MURA_SUM                 : 이상발의 얼룩 glass 단위 얼룩지수 합
+    
+        m07.MURA_AIB_HIST                 : s01.AIB_MURA_HIST_EXTRC            : HISTORY 분석을 위한 데이터 추출

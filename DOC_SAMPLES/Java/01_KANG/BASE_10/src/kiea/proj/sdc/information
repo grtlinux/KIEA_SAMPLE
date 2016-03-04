@@ -1,0 +1,138 @@
+-Dfile.encoding=euc-kr
+-Danal.base.path=D:/ANAL/anal
+-Danal.service.code=010
+-Danal.logger.flag=yes
+
+
+
+anal.service.010.use          = Y
+anal.service.010.name         = LYA
+anal.service.010.title        = 불량 자동분석
+anal.service.010.base.path    = {anal.base.path}/LYA
+
+anal.service.020.use          = Y
+anal.service.020.name         = MURA
+anal.service.020.title        = 얼룩 자동분석
+anal.service.020.base.path    = {anal.base.path}/MURA
+
+anal.service.030.use          = Y
+anal.service.030.name         = LCMG
+anal.service.030.title        = 액정마진 자동분석
+anal.service.030.base.path    = {anal.base.path}/LCMG
+
+anal.service.040.use          = Y
+anal.service.040.name         = INFRA
+anal.service.040.title        = InfraEES 자동분석
+anal.service.040.base.path    = {anal.base.path}/INFRA
+
+
+
+1. aib(Mura)
+2. preanal(Mura)
+3. img(Mura)
+4. mod(lya)
+5. wip(Mura)
+6. wip(lya)
+
+
+
+
+MOD sample data
+
+    L5FAB
+        ANAL_METHOD        FILTER
+        AREA_CODE          MOD
+        DECISION_CODE      X
+        DEFECT_GROUP_CODE  GPTC
+        INSPECT_DT         20140824210000
+        INSPECT_DT         20140825205959
+        LINE_CODE          L5FAB
+        PARAMETER_COUNT    11
+        PRODUCT_TYPE       PP
+        SUB_AREA_CODE      BK1_FT
+        USER_GROUP_CODE    59.8-L5598A1
+        USL                2.08
+
+    L6FAB
+        ANAL_METHOD        FILTER
+        AREA_CODE          MOD
+        DECISION_CODE      X
+        DEFECT_GROUP_CODE  GPTC
+        INSPECT_DT         20140825050000
+        INSPECT_DT         20140826045959
+        LINE_CODE          L6FAB
+        PARAMETER_COUNT    11
+        PRODUCT_TYPE       PP
+        SUB_AREA_CODE      RD1_FT
+        USER_GROUP_CODE    9.7-L6097Q3
+        USL                1.21
+
+    L7AFAB
+        ANAL_METHOD        FILTER
+        AREA_CODE          MOD
+        DECISION_CODE      RJ
+        DEFECT_GROUP_CODE  UWSP
+        INSPECT_DT         20140825050000
+        INSPECT_DT         20140826045959
+        LINE_CODE          L7AFAB
+        PARAMETER_COUNT    11
+        PRODUCT_TYPE       PP
+        SUB_AREA_CODE      MMT
+        USER_GROUP_CODE    40-FHD-60P-MB4-PVA3-A6P-VNB5
+        USL                0.8
+
+    L8AFAB
+        ANAL_METHOD        FILTER
+        AREA_CODE          MOD
+        DECISION_CODE      RJ
+        DEFECT_GROUP_CODE  UVT1
+        INSPECT_DT         20140825050000
+        INSPECT_DT         20140826045959
+        LINE_CODE          L8AFAB
+        PARAMETER_COUNT    11
+        PRODUCT_TYPE       PP
+        SUB_AREA_CODE      MMT
+        USER_GROUP_CODE    46-FHD-MB3-SPR7a-A7PP-NNB-8A
+        USL                0.85
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

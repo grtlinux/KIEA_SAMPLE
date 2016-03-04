@@ -1,0 +1,10 @@
+cd  C:\java200code\chapt140\jungbo\code\test2\source
+javac -d C:\java200code\chapt140\jungbo\code\test2\classes  *.java
+
+Manifest-Version: 1.0
+Main-Class: com.jungbo.three.SecretMain
+
+cd C:\java200code\chapt140\jungbo\code\test2\secrete3
+jar cvMf secrete3.jar -C C:\java200code\chapt140\jungbo\code\test2\classes\  .
+
+java -jar secrete3.jar

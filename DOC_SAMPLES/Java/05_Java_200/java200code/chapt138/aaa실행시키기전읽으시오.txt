@@ -1,0 +1,3 @@
+javac -d  C:\java200code\chapt138\secrete   C:\java200code\chapt138\aaa\*.java
+
+java -cp  .;C:\java200code\chapt138\secrete   PackageUsingSecretMain

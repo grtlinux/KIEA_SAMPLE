@@ -1,0 +1,3 @@
+cd  C:\java200code\chapt141\jungbo\code\test2\source
+javac -d  . *.java
+javap com.jungbo.three.SecretMain > SecretMain.text
