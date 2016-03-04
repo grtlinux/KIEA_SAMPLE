@@ -1,0 +1,25 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+<TITLE> New Document </TITLE>
+<META NAME="Generator" CONTENT="EditPlus">
+<META NAME="Author" CONTENT="">
+<META NAME="Keywords" CONTENT="">
+<META NAME="Description" CONTENT="">
+</HEAD>
+
+<BODY>
+<TABLE>
+<TR>
+	<TD colspan="2">상단</TD>
+</TR>
+<TR>
+	<TD>좌측</TD>
+	<TD>중앙의 내용</TD>
+</TR>
+<TR>
+	<TD colspan="2">하단</TD>
+</TR>
+</TABLE>
+</BODY>
+</HTML>

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="euc-kr" ?>
+
+<taglib xmlns="http://java.sun.com/xml/ns/j2ee"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee
+                        web-jsptaglibrary_2_0.xsd"
+    version="2.0">
+
+    <description>JSP2.0에서 SimpleTag를 사용한 커스텀 태그 예제</description>
+    <display-name>SimpleTag를 사용한 커스텀 태그 예제</display-name>
+    <tlib-version>1.0</tlib-version>
+    <short-name>simpleTag</short-name>
+
+  <tag>
+	<name>simpleWelcome</name>
+	<tag-class>ch17.SimpleWelcomeTag</tag-class>
+	<body-content>empty</body-content>
+  </tag>
+
+  <tag>
+	<name>simpleBody</name>
+	<tag-class>ch17.SimpleBodyTag</tag-class>
+	<body-content>scriptless</body-content>
+  </tag>
+</taglib>   

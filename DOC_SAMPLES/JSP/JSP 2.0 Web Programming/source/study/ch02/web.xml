@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="euc-kr"?>
+<web-app xmlns="http://java.sun.com/xml/ns/j2ee"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd"
+    version="2.4">
+
+  <display-name>study</display-name>
+  <description>
+     예제 작성 웹 어플리케이션 폴더
+  </description>
+</web-app>
