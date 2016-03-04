@@ -1,0 +1,13 @@
+#!/bin/ksh
+# Script name: do_square
+# Example 10.123
+
+function square {
+    (( sq = $1 * $1 ))
+    print "Number to be squared is $1."
+    print "The result is $sq "
+}
+
+read number?"Give me a number to square. "
+value_returned=$(square $number)
+print $value_returned

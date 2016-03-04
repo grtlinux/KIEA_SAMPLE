@@ -1,0 +1,17 @@
+#!/bin/csh -f
+#
+# Sript name: grade
+# Example:    9.80
+#
+
+echo  -n "What was your grade? "
+set grade = $<
+if ( $grade >= 90 && $grade <= 100 ) then
+   echo "You got an A\!"
+else if ( $grade > 79 ) then
+   echo "You got a B"
+else if ( $grade > 69 ) then
+   echo "You're average"
+else
+   echo "Better study"
+endif

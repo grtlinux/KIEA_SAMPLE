@@ -1,0 +1,9 @@
+#!/bin/ksh
+# Script name: are_you_ok
+# Example 10.86
+print "Are you o.k. (y/n) ?"
+read answer
+if [ "$answer" = Y -o "$answer" = y ] 	# Old style test
+then
+   print "Glad to hear it."
+fi	

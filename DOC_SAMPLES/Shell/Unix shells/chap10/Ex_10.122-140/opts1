@@ -1,0 +1,12 @@
+#!/bin/ksh
+# Script name: opts1
+# Example 10.137
+
+# Using getopts -- First try --
+while getopts xy options
+do
+    case $options in
+	x) print "you entered -x as an option";;
+	y) print "you entered -y as an option";;
+    esac
+done

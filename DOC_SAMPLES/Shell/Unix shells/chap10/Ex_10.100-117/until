@@ -1,0 +1,9 @@
+#!/bin/ksh
+# Script name: until
+# Example 10.104
+
+until who | grep linda
+do
+    sleep 5
+done
+talk linda@dragonwings

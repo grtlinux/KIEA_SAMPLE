@@ -1,0 +1,27 @@
+#!/bin/bash
+# Program name: ttype
+# Purpose: set the terminal type
+# Author: Andy Admin
+COLUMNS=60
+LINES=1
+PS3="Please enter the terminal type: "
+select choice in wyse50 vt200 xterm sun
+do
+   case $REPLY in
+      1)
+	 export TERM=$choice
+	 printf "TERM=$choice \n"
+	 break;;         # break out of the select loop
+      2 | 3 )
+	 export TERM=$choice
+	 printf "TERM=$choice \n"
+	 break;;
+      4)
+	 export TERM=$choice
+	 printf "TERM=$choice \n"
+	 break;;
+      *)
+	 printf "$REPLY is not a valid choice. Try again \n" 1>&2
+	 ;;
+   esac
+done

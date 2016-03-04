@@ -1,0 +1,11 @@
+#/bin/csh  -f
+#
+# Sript name: greeting
+# Example:    9.67
+#
+# The greeting script
+#
+
+echo -n  "What is your name? " 
+set name = $<
+echo Greetings  to you, $name.

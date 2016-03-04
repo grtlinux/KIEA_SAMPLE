@@ -1,0 +1,18 @@
+#!/bin/bash
+# Program name: goodboys
+PS3="Please choose one of the three boys : "
+select choice in tom dan guy
+do
+   case $choice in
+      tom)
+	 printf "Tom is a cool dude! \n "
+	 break;;                  #break out of the select loop
+      dan | guy )
+	 printf " Dan and Guy are both sweethearts. \n"
+	 break;;
+      *)
+	 printf " $REPLY is not one of your choices \n" 1>&2
+	 printf "Try again. \n"
+	 ;;
+   esac
+done

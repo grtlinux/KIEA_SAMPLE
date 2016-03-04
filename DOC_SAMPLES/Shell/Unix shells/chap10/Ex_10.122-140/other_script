@@ -1,0 +1,7 @@
+# NOTE: This script cannot be invoked with #!/bin/ksh 
+#    because function "sayit" is imported from script
+#    "calling_script", not defined in this script.
+
+print "In other script "
+sayit Dan
+print "Returning to calling script"	

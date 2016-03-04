@@ -1,0 +1,8 @@
+#!/bin/ksh
+# Scriptname: greet
+# Example 10.100
+
+for name in $*     #or  for name in $@
+do
+    echo Hi $name 
+done

@@ -1,0 +1,15 @@
+#!/bin/ksh
+# Script name: todebug
+# Example 10.134
+
+name="Joe Blow"
+if [[ $name = [Jj]* ]] then
+    print Hi $name
+fi
+
+num=1
+while (( num < 5 ))
+do
+    (( num=num+1 ))
+done
+print The grand total is $num

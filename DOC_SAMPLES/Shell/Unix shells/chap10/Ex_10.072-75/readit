@@ -1,0 +1,15 @@
+#!/bin/ksh
+# Script name: readit
+# Example 10.75
+
+if [ $# != 2 ] ; then
+   print \
+   "Usage: $(basename $0 ) filename filename" \
+   1>&2
+   exit 1
+fi
+
+while read -u3 line1 && read -u4 line2
+do
+   print "$line1:$line2"
+done 3<$1 4<$2

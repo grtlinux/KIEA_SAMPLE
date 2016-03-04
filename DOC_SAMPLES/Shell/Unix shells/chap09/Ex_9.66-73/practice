@@ -1,0 +1,10 @@
+#!/bin/csh
+#
+# Sript name: practice
+# Example:    9.71
+#
+
+echo Hello $LOGNAME
+echo The date is `date`
+echo Your home shell is $SHELL
+echo Good-bye $LOGNAME

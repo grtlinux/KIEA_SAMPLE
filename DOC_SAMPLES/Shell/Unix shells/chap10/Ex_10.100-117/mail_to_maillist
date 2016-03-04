@@ -1,0 +1,15 @@
+#!/bin/ksh
+# Script name: mail_to_maillist
+# Ex 10.111
+# Usage: mail_to_maillist
+
+set -x
+
+for name in $(< mail_list)
+do
+    if [[ "$name" = "richard" ]]  then
+	continue
+    else
+	echo mail $name < memo
+    fi
+done

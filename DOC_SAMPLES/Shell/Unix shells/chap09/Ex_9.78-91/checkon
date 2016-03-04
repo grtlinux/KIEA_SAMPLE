@@ -1,0 +1,10 @@
+#!/bin/csh -f
+#
+# Script name: checkon
+# Example:     9.82
+#
+
+if ( $#argv != 1 ) then
+   echo "$0 requires an argument"
+   exit 2
+endif

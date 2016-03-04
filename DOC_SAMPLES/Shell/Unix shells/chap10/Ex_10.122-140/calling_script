@@ -1,0 +1,10 @@
+#!/bin/ksh
+# Script name: calling_script
+# Example 10.124
+
+function sayit { print "How are ya $1?" ; } 
+typeset -fx sayit     # Export sayit to other scripts  
+sayit Tommy 
+print "Going to other script" 
+other_script          # Call other_script 
+print "Back in calling script" 	

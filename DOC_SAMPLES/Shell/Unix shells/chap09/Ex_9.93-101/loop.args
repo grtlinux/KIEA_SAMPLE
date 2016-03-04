@@ -1,0 +1,10 @@
+#!/bin/csh -f
+#
+# Sript name: loop.args
+# Example:    9.99
+#
+
+while ($#argv)
+   echo $argv
+   shift
+end

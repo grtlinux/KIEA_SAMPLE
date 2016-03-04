@@ -1,0 +1,13 @@
+#!/bin/ksh
+# Script name: doit0
+# Example 10.108
+
+set -x
+set joe mary tom sam
+shift 
+print $*
+set $(date)
+print $*
+shift 5
+print $*
+shift 2

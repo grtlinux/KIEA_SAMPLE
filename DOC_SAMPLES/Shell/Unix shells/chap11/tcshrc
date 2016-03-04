@@ -1,0 +1,14 @@
+# (The .tcshrc File)
+if ( $?prompt ) then
+ 	  set prompt = "\! stardust > "
+ 	  set history = 100
+ 	  set savehist = 5
+ 	  set noclobber
+ 	  set rmstar
+
+ 	  set cdpath = ( /home/jody/ellie/bin /usr/local/bin /usr/bin )
+ 	  set ignoreeof
+ 	  alias m more
+	  alias status 'date;du -s'
+	  alias cd 'cd \!*;set prompt = "\! <$cwd> "'
+endif
