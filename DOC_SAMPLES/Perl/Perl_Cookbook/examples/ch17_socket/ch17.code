@@ -458,7 +458,7 @@ while ($client_addr = accept(NEW_SOCKET, SOCKET)) {
 #!/usr/bin/perl -w
 
 # -------------------------------------
-# Perl Client : client.pl
+# Perl Client : client1.pl -> ERROR
 # -------------------------------------
 
 use strict;
@@ -482,6 +482,39 @@ while ($line = <SOCKET>) {
 
 close SOCKET or die "close: $!";
 
+
+--------------------------------------------------------------------------------------------------------------
+#!/usr/bin/perl -w
+
+# -------------------------------------
+# Perl Client : client2.pl
+# -------------------------------------
+
+use strict;
+use Socket;
+
+# initialize host and port
+my $server = "192.168.0.11";
+my $port = 7890;
+
+print "($server, $port)\n";
+
+# create the socket, connect to the port
+socket(SOCKET, PF_INET, SOCK_STREAM, (getprotobyname('tcp'))[2]) or die "Can't create a socket $!\n";
+
+# connect to the server port
+connect(SOCKET, pack_sockaddr_in($port, inet_aton($server)))     or die "Can't connect to port $port !\n";
+
+# read data from the server
+my $line;
+while ($line = <SOCKET>) {
+	print "$line\n";
+}
+
+# close socket
+close SOCKET or die "close: $!";
+
+print "OK!!!\n";
 
 --------------------------------------------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------------------
