@@ -1,5 +1,7 @@
 #!/bin/sh
 
+# ERROR
+
 backup_dir="/home/user1/backup"
 
 # myapp 디렉터리를 $backup_dir 밑에 백업 복사
