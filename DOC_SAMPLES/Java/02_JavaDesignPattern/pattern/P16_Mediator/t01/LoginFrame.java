@@ -52,7 +52,7 @@ public class LoginFrame extends Frame implements ActionListener, Mediator
 		textUser = new ColleagueTextField("", 10);
 		textPass = new ColleagueTextField("", 10);
 		textPass.setEchoChar('*');
-		buttonOk = new ColleagueButton("OK °­");
+		buttonOk = new ColleagueButton("OK");
 		buttonCancel = new ColleagueButton("Cancel");
 		
 		checkGuest.setMediator(this);
